@@ -51,6 +51,6 @@ public:
 
 	std::pair<void*, size_t> GetAttachmentRawData(int index);
 	std::vector<std::string> GetAttachmentNames();
-	std::unique_ptr<PImage> CZIreadAPI::GetLabelImage(int index);
+	std::unique_ptr<PImage> GetLabelImage(int index);
 };
 
