@@ -693,6 +693,39 @@ class CziReader:
 
         return np_pixel_data
 
+    def read_color(
+        self,
+        roi: Optional[Union[Tuple[int, int, int, int], Rectangle]] = None,
+        scene: Optional[int] = None,
+        zoom: Optional[float] = None,
+        background_pixel: Union[Tuple[float, float, float], Color] = BLACK_COLOR,
+    ) -> np.ndarray:
+        if roi:
+            roi = Rectangle(*roi)
+        if not isinstance(background_pixel, Color):
+            background_pixel = Color(*background_pixel)
+
+        # Generating possibly non specified values
+        roi = self._create_roi(roi, scene)
+
+        # Formatting parameters for the low level call
+        roi_libczi = self._format_roi(roi)
+        background_pixel_libczi = self._format_background_pixel(background_pixel)
+        #plane_libczi = self._format_plane(plane)
+        #scene_libczi = "" if scene is None else str(scene)
+        zoom_libczi = 1.0 if zoom is None else float(zoom)
+
+        # Getting the bitmap
+        pixel_data = self._czi_reader.GetComposeMultiChannelData(
+            background_pixel_libczi,
+            roi_libczi,
+            zoom_libczi,
+        )
+        # Converting to numpy array
+        np_pixel_data = self._get_array_from_bitmap(pixel_data)
+
+        return np_pixel_data
+
 class CziWriter:
     """CziWriter class.
 
